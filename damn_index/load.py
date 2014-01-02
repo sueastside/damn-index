@@ -50,10 +50,10 @@ def create_store_index(client, index):
         'subname': {"type" : "multi_field",
                     "fields" : {
                         "subname" : {"type" : "string", "index" : "analyzed"},
-                        "subname_raw" : {"type" : "string", "index" : "not_analyzed"}
+                        "subname_raw" : {"type" : "string", "index" : "not_analyzed", 'store': True}
                     }},
-        'mimetype': {'type': 'string', 'index' : 'not_analyzed'},
-        'file_hash': {'type': 'string', 'index' : 'not_analyzed'},
+        'mimetype': {'type': 'string', 'index' : 'not_analyzed', 'store': True},
+        'file__hash': {'type': 'string', 'index' : 'not_analyzed', 'store': True},
         'file__filename': {'type': 'string', 'analyzer': 'file_path'}
     }
     
@@ -124,17 +124,18 @@ def parse_file_references(path):
         }
         if metadata.assets:
             for asset in metadata.assets:
-                yield {
-                    '_id': str(metadata.file.hash)+str(asset.asset.subname)+str(asset.asset.mimetype),
-                    "_type" : "AssetReference",
-                    '_parent': metadata.file.hash,
-                    'asset__subname': asset.asset.subname,
-                    'asset__mimetype': asset.asset.mimetype,
-                    'asset__file__filename': asset.asset.file.filename,
-                    'asset__file__hash': asset.asset.file.hash,
-                    'metadata': [{'key': key} for key, meta in asset.metadata.items()] if asset.metadata else [],
-                    'dependencies': [{'subname': dep.subname, 'mimetype': dep.mimetype, 'file__filename':dep.file.filename, 'file__hash': dep.file.hash} for dep in asset.dependencies] if asset.dependencies else [],
-                }
+                if asset.asset.file.hash == metadata.file.hash:
+                    yield {
+                        '_id': str(asset.asset.file.hash)+str(asset.asset.subname)+str(asset.asset.mimetype),
+                        "_type" : "AssetReference",
+                        '_parent': metadata.file.hash,
+                        'asset__subname': asset.asset.subname,
+                        'asset__mimetype': asset.asset.mimetype,
+                        'asset__file__filename': asset.asset.file.filename,
+                        'asset__file__hash': asset.asset.file.hash,
+                        'metadata': [{'key': key} for key, meta in asset.metadata.items()] if asset.metadata else [],
+                        'dependencies': [{'subname': dep.subname, 'mimetype': dep.mimetype, 'file__filename':dep.file.filename, 'file__hash': dep.file.hash} for dep in asset.dependencies] if asset.dependencies else [],
+                    }
 
 
 def parse_store(client, path='/tmp/damn', index='damn'):

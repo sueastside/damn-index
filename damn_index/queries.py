@@ -71,3 +71,44 @@ result = es.search(
     }
 )
 print_hits(result, {'metadata': ''})
+
+
+
+
+
+result = es.search(
+    index='damn',
+    doc_type='AssetReference',
+    body={
+        'query': {
+        'filtered': {
+          'filter': {
+            'has_parent': {
+                'type': 'FileReference',
+                "query" : {
+                "filtered": {
+                  "query": { "match_all": {}},
+                  "filter" : {"term": {  "file__hash": "90ca0b2230d6f9b486cd932e1ae1c28b780a2b0c"}}            
+                  }
+                }
+              }
+            }
+          }
+        }
+    }
+)
+'''
+result = es.search(
+    index='damn',
+    doc_type='AssetReference',
+    body={
+            "query" : {
+            "filtered": {
+              "query": { "match_all": {}},
+              "filter" : {"term": {  "file__hash": "90ca0b2230d6f9b486cd932e1ae1c28b780a2b0c"}}            
+              }
+            }
+          }
+)
+'''
+print_hits(result)
