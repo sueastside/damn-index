@@ -112,3 +112,15 @@ result = es.search(
 )
 '''
 print_hits(result)
+
+
+result = es.search(
+    index='damn',
+    doc_type='FileReference',
+    body={
+            "query" : {
+                "match" : {"file__filename" : "/home/sueastside"}
+            }
+          }
+)
+print_hits(result)

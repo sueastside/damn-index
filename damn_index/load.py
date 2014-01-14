@@ -17,6 +17,8 @@ import logging
 
 from damn_at import MetaDataStore
 
+from damn_index import DAMNIndex
+
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk, streaming_bulk
 
@@ -111,32 +113,23 @@ def create_store_index(client, index):
 def parse_file_references(path):
     """
     """
+    import yaml
+    import json
     store = MetaDataStore()
+    indexer = DAMNIndex()
+    dump = open('/tmp/play.txt', 'wb')
     for filename in os.listdir(path):
         print('=' * 80)
         print(filename) 
-        metadata = store.get_metadata(path, filename)
-        print(metadata)
-        yield {
-            '_id': metadata.file.hash,
-            "_type" : "FileReference",
-            'file__hash': metadata.file.hash,
-            'file__filename': metadata.file.filename,
-        }
-        if metadata.assets:
-            for asset in metadata.assets:
-                print(asset.asset.subname, asset.asset.mimetype, asset.asset.file.filename)
-                yield {
-                    '_id': str(asset.asset.file.hash)+str(asset.asset.subname)+str(asset.asset.mimetype),
-                    "_type" : "AssetReference",
-                    '_parent': metadata.file.hash,
-                    'asset__subname': asset.asset.subname,
-                    'asset__mimetype': asset.asset.mimetype,
-                    'asset__file__filename': asset.asset.file.filename,
-                    'asset__file__hash': asset.asset.file.hash,
-                    'metadata': [{'key': key} for key, meta in asset.metadata.items()] if asset.metadata else [],
-                    'dependencies': [{'subname': dep.subname, 'mimetype': dep.mimetype, 'file__filename':dep.file.filename, 'file__hash': dep.file.hash} for dep in asset.dependencies] if asset.dependencies else [],
-                }
+        a_file_reference = store.get_metadata(path, filename)
+        print(json.dumps(a_file_reference, indent=4))
+        #print(a_file_reference)
+        for document in  indexer.serialize_to_documents(a_file_reference):
+            print(document)
+            dump.write(yaml.dump(document))
+            dump.write('\n---\n')
+            yield document
+
 
 
 def parse_store(client, path='/tmp/damn', index='damn'):
