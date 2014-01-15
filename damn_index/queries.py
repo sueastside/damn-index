@@ -35,7 +35,7 @@ print_hits(es.search(index='damn'))
 
 result = es.search(
     index='damn',
-    doc_type='AssetReference',
+    doc_type='AssetDescription',
     body={
         "query" : {
             "match_all" : {  }
@@ -55,7 +55,7 @@ print_hits(result, {'mimetype': ''})
 
 result = es.search(
     index='damn',
-    doc_type='AssetReference',
+    doc_type='AssetDescription',
     body={
         "query" : {
             "match_all" : {  }
@@ -78,13 +78,13 @@ print_hits(result, {'metadata': ''})
 
 result = es.search(
     index='damn',
-    doc_type='AssetReference',
+    doc_type='AssetDescription',
     body={
         'query': {
         'filtered': {
           'filter': {
             'has_parent': {
-                'type': 'FileReference',
+                'type': 'FileDescription',
                 "query" : {
                 "filtered": {
                   "query": { "match_all": {}},
@@ -100,7 +100,7 @@ result = es.search(
 '''
 result = es.search(
     index='damn',
-    doc_type='AssetReference',
+    doc_type='AssetDescription',
     body={
             "query" : {
             "filtered": {
@@ -116,7 +116,7 @@ print_hits(result)
 
 result = es.search(
     index='damn',
-    doc_type='FileReference',
+    doc_type='FileDescription',
     body={
             "query" : {
                 "match" : {"file__filename" : "/home/sueastside"}

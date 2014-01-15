@@ -61,9 +61,9 @@ def create_store_index(client, index):
     
     client.indices.put_mapping(
         index=index,
-        doc_type='FileReference',
+        doc_type='FileDescription',
         body={
-          'FileReference': {
+          'FileDescription': {
             "_id" : {
                 "path" : "file__hash"
             },
@@ -77,11 +77,11 @@ def create_store_index(client, index):
     
     client.indices.put_mapping(
         index=index,
-        doc_type='AssetReference',
+        doc_type='AssetDescription',
         body={
-          'AssetReference': {
+          'AssetDescription': {
             '_parent': {
-              'type': 'FileReference'
+              'type': 'FileDescription'
             },
             'properties': {
               'asset__subname': {"type" : "multi_field",
@@ -110,7 +110,7 @@ def create_store_index(client, index):
     )
 
 
-def parse_file_references(path):
+def parse_file_descriptions(path):
     """
     """
     import yaml
@@ -121,10 +121,10 @@ def parse_file_references(path):
     for filename in os.listdir(path):
         print('=' * 80)
         print(filename) 
-        a_file_reference = store.get_metadata(path, filename)
-        print(json.dumps(a_file_reference, indent=4))
-        #print(a_file_reference)
-        for document in  indexer.serialize_to_documents(a_file_reference):
+        file_descr = store.get_metadata(path, filename)
+        print(json.dumps(file_descr, indent=4))
+        #print(file_descr)
+        for document in  indexer.serialize_to_documents(file_descr):
             print(document)
             dump.write(yaml.dump(document))
             dump.write('\n---\n')
@@ -142,7 +142,7 @@ def parse_store(client, path='/tmp/damn', index='damn'):
 
     for ok, result in streaming_bulk(
             client,
-            parse_file_references(path),
+            parse_file_descriptions(path),
             index=index,
             chunk_size=50 # keep the batch sizes small for appearances only
         ):

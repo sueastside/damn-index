@@ -35,7 +35,7 @@ class DAMNSearch(object):
         )
     
     def get_mimetypes_with_count(self):
-        results = self._search_facets('AssetReference',
+        results = self._search_facets('AssetDescription',
                         {
                             "mimetype" : {
                                 "terms" : {
