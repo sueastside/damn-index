@@ -17,7 +17,7 @@ config = {
     'scripts': [],
     'name': 'damn_index',
     'entry_points':{
-          'console_scripts':['damn_index = damn_index:main']
+          'peragro.commandline.hooks':['transform = damn_index.cli:transform']
     }
 }
 
