@@ -1,4 +1,4 @@
-damn-index
+peragro-index
 ==========
 
-Elastic search based index for DAMN metadata
+Elastic search based index for Peragro metadata
