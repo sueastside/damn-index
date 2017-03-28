@@ -3,6 +3,7 @@ sudo /usr/share/elasticsearch/bin/plugin -install mobz/elasticsearch-head
 http://localhost:9200/_plugin/head/
 """
 
+from __future__ import absolute_import
 import logging
 from elasticsearch import Elasticsearch
 

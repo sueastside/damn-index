@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import sys
 import argparse
 import json
@@ -54,8 +56,8 @@ def create_argparse_transform(parser, subparsers):
             a.update(asset)
             assets.append(a)
         for asset in assets:
-            print json.dumps({'index': {'_id': asset['id']}})
-            print json.dumps(asset)
+            print(json.dumps({'index': {'_id': asset['id']}}))
+            print(json.dumps(asset))
 
 
     subparse.set_defaults(
@@ -82,7 +84,7 @@ def create_argparse_generate_search(parser, subparsers):
                 field_name = get_metadatavalue_fieldname(type)
                 ret['aggs'][meta] = { 'terms' : {'field' : 'metadata.'+meta+'.'+field_name} }
 
-        print json.dumps(ret, indent=2)
+        print(json.dumps(ret, indent=2))
 
     subparse.set_defaults(
             func=lambda args:
@@ -103,9 +105,9 @@ def create_argparse_stats(parser, subparsers):
     def stats(args):
         data = args.infile.read()
         data = json.loads(data)
-        print 'Uploaded: {0:>6}'.format(len(data['items']))
-        print 'Errors:   {0:>6}'.format(data['errors'])
-        print 'took:     {:>6} ms'.format(data['took'])
+        print('Uploaded: {0:>6}'.format(len(data['items'])))
+        print('Errors:   {0:>6}'.format(data['errors']))
+        print('took:     {:>6} ms'.format(data['took']))
         if data['errors']:
             sys.exit(1)
 

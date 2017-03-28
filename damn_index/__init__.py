@@ -1,6 +1,7 @@
 """
 The DAMN INDEX module.
 """
-from damnsearch import DAMNSearch
+from __future__ import absolute_import
+from .damnsearch import DAMNSearch
 
-from damnindex import DAMNIndex
+from .damnindex import DAMNIndex

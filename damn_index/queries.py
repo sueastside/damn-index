@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
+from __future__ import absolute_import
 import logging
 from dateutil.parser import parse as parse_date
 
