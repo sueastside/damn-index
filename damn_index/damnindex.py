@@ -26,7 +26,7 @@ class DAMNIndex(object):
                     'asset__mimetype': asset.asset.mimetype,
                     'asset__file__filename': asset.asset.file.filename,
                     'asset__file__hash': asset.asset.file.hash,
-                    'metadata': [{'key': key} for key, meta in asset.metadata.items()] if asset.metadata else [],
+                    'metadata': [{'key': key} for key, meta in list(asset.metadata.items())] if asset.metadata else [],
                     'dependencies': [{'subname': dep.subname, 'mimetype': dep.mimetype, 'file__filename':dep.file.filename, 'file__hash': dep.file.hash} for dep in asset.dependencies] if asset.dependencies else [],
                 }
         

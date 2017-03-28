@@ -1,6 +1,6 @@
 """
 The DAMN INDEX module.
 """
-from damnsearch import DAMNSearch
+from .damnsearch import DAMNSearch
 
-from damnindex import DAMNIndex
+from .damnindex import DAMNIndex
