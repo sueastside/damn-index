@@ -7,7 +7,7 @@ delete everything
 curl -XDELETE 'http://localhost:9200/damn/'
 '''
 
-from __future__ import print_function
+
 
 from __future__ import absolute_import
 import os

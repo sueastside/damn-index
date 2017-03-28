@@ -79,7 +79,7 @@ def create_argparse_generate_search(parser, subparsers):
         ret = {'aggs': {},
                 'query' : {'match_all' : {}},
                 'from' : 3, 'size' : 1,}
-        for mime, metas in m.items():
+        for mime, metas in list(m.items()):
             for meta, type in metas:
                 field_name = get_metadatavalue_fieldname(type)
                 ret['aggs'][meta] = { 'terms' : {'field' : 'metadata.'+meta+'.'+field_name} }

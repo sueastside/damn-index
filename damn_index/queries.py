@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import print_function
+
 
 from __future__ import absolute_import
 import logging
@@ -16,7 +16,7 @@ def print_hits(results, facet_masks={}):
     for hit in results['hits']['hits']:
         print('/%s/%s/%s' % (hit['_index'], hit['_type'], hit['_id']))
 
-    for facet, mask in facet_masks.items():
+    for facet, mask in list(facet_masks.items()):
         print('-' * 80)
         for d in results['facets'][facet]['terms']:
             #print(mask % d)
