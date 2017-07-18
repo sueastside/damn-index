@@ -60,7 +60,7 @@ def create_store_index(client, index):
         'file__hash': {'type': 'string', 'index': 'not_analyzed', 'store': True},
         'file__filename': {'type': 'string', 'analyzer': 'file_path'}
     }
-    
+
     client.indices.put_mapping(
         index=index,
         doc_type='FileDescription',
@@ -76,7 +76,7 @@ def create_store_index(client, index):
             }
         }
     )
-    
+
     client.indices.put_mapping(
         index=index,
         doc_type='AssetDescription',
@@ -107,7 +107,9 @@ def create_store_index(client, index):
                                           'index': 'not_analyzed',
                                           'store': True},
                     "metadata": {
-                        "type": "nested", "store": "yes", "index": "analyzed", "omit_norms" : "true", "include_in_parent":True,
+                        "type": "nested", "store": "yes",
+                        "index": "analyzed", "omit_norms": "true",
+                        "include_in_parent": True,
                         "properties": {
                             "key": {"type": "string"},
                             "value": {"type": "string"},  # TODO: make multi_field
@@ -136,7 +138,7 @@ def parse_file_descriptions(path):
     dump = open('/tmp/play.txt', 'wb')
     for filename in os.listdir(path):
         print('=' * 80)
-        print(filename) 
+        print(filename)
         file_descr = store.get_metadata(path, filename)
         print(json.dumps(file_descr, indent=4))
         # print(file_descr)
@@ -188,4 +190,3 @@ if __name__ == '__main__':
 
     # and now we can count the documents
     print(es.count(index='damn')['count'], 'documents in index')
-

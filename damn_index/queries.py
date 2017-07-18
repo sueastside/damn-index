@@ -116,9 +116,9 @@ result = es.search(
     index='damn',
     doc_type='FileDescription',
     body={
-            "query": {
-                "match": {"file__filename": "/home/sueastside"}
-            }
-          }
+        "query": {
+            "match": {"file__filename": "/home/sueastside"}
+        }
+    }
 )
 print_hits(result)
