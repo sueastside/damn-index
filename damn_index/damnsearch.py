@@ -7,6 +7,7 @@ from __future__ import absolute_import
 import logging
 from elasticsearch import Elasticsearch
 
+
 class DAMNSearch(object):
     """Class to launch queries against the DAMN's Elasticsearch index"""
     def __init__(self):
@@ -38,9 +39,9 @@ class DAMNSearch(object):
     def get_mimetypes_with_count(self):
         results = self._search_facets('AssetDescription',
                         {
-                            "mimetype" : {
-                                "terms" : {
-                                    "field" : "asset__mimetype"
+                            "mimetype": {
+                                "terms": {
+                                    "field": "asset__mimetype"
                                 }
                             }
                         })
@@ -49,4 +50,4 @@ class DAMNSearch(object):
             return ret
         else:
             raise Exception('Failed to get_mimetypes_with_count')
-        
+

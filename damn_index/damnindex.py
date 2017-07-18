@@ -4,6 +4,7 @@ from __future__ import absolute_import
 import logging
 from elasticsearch import Elasticsearch
 
+
 class DAMNIndex(object):
     """Class to launch queries against the DAMN's Elasticsearch index"""
     def __init__(self):
@@ -12,7 +13,7 @@ class DAMNIndex(object):
     def _serialize_file_description(self, file_descr):
         return {
                     '_id': file_descr.file.hash,
-                    "_type" : "FileDescription",
+                    "_type": "FileDescription",
                     'file__hash': file_descr.file.hash,
                     'file__filename': file_descr.file.filename,
                 }
@@ -21,7 +22,7 @@ class DAMNIndex(object):
         asset = asset_descr
         return {
                     '_id': str(asset.asset.file.hash)+str(asset.asset.subname)+str(asset.asset.mimetype),
-                    "_type" : "AssetDescription",
+                    "_type": "AssetDescription",
                     '_parent': file_descr.file.hash,
                     'asset__subname': asset.asset.subname,
                     'asset__mimetype': asset.asset.mimetype,

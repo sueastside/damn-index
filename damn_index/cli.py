@@ -15,9 +15,10 @@ pt a ../damn-test-files/mesh/blender/untitled.blend -f json-pretty\
  | pt index stats
 '''
 
+
 def create_argparse(parser, subparsers):
     subparse = subparsers.add_parser(
-            "index", #aliases=("i",),
+            "index",  # aliases=("i",),
             help="Anything to do with indexing",
             )
     subsubparsers = subparse.add_subparsers(
@@ -32,13 +33,14 @@ def create_argparse(parser, subparsers):
 
 def create_argparse_transform(parser, subparsers):
     subparse = subparsers.add_parser(
-            "transform", #aliases=("transform",),
+            "transform",  # aliases=("transform",),
             help="Transform a given filedescription to a format usable for indexing",
             )
     subparse.add_argument(
             'infile', nargs='?',
             type=argparse.FileType('r'),
             default=sys.stdin)
+
     def transform(args):
         data = args.infile.read()
         data = json.loads(data)
@@ -59,16 +61,12 @@ def create_argparse_transform(parser, subparsers):
             print(json.dumps({'index': {'_id': asset['id']}}))
             print(json.dumps(asset))
 
-
-    subparse.set_defaults(
-            func=lambda args:
-                transform(args),
-            )
+    subparse.set_defaults(func=lambda args: transform(args),)
 
 
 def create_argparse_generate_search(parser, subparsers):
     subparse = subparsers.add_parser(
-            "generate-search", #aliases=("transform",),
+            "generate-search",  # aliases=("transform",),
             help="Generate a faceted search",
             )
 
@@ -94,7 +92,7 @@ def create_argparse_generate_search(parser, subparsers):
 
 def create_argparse_stats(parser, subparsers):
     subparse = subparsers.add_parser(
-            "stats", #aliases=("transform",),
+            "stats",  # aliases=("transform",),
             help="Generate stats from an ES bulk upload",
             )
     subparse.add_argument(
@@ -111,7 +109,4 @@ def create_argparse_stats(parser, subparsers):
         if data['errors']:
             sys.exit(1)
 
-    subparse.set_defaults(
-            func=lambda args:
-                stats(args),
-            )
+    subparse.set_defaults(func=lambda args: stats(args),)

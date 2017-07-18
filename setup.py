@@ -7,18 +7,18 @@ except ImportError:
 config = {
     'description': 'Digital Assets Managed Neatly: Indexing',
     'author': 'sueastside',
-    'url': 'https://github.com/sueastside/damn-index',
-    'download_url': 'https://github.com/sueastside/damn-index',
+    'url': 'https://github.com/peragro/peragro-index',
+    'download_url': 'https://github.com/peragro/peragro-index',
     'author_email': 'No, thanks',
     'version': '0.1',
     'test_suite': 'tests.suite',
-    'install_requires': ['damn_at', 'pylint', 'elasticsearch'],
+    'install_requires': ['damn_at', 'elasticsearch'],
     'test_requires': [],
     'packages': ['damn_index'],
     'scripts': [],
     'name': 'damn_index',
-    'entry_points':{
-          'peragro.commandline.hooks':[
+    'entry_points': {
+          'peragro.commandline.hooks': [
             'index = damn_index.cli:create_argparse',
           ]
     }
