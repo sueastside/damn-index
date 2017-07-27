@@ -1,13 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''
+"""
 delete everything
 
 curl -XDELETE 'http://localhost:9200/damn/'
-'''
-
-
+"""
 
 from __future__ import absolute_import
 import os
@@ -23,90 +21,120 @@ from damn_index import DAMNIndex
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk, streaming_bulk
 
+
 def create_store_index(client, index):
     # create empty index
     client.indices.create(
         index=index,
         body={
-          'settings': {
-            # just one shard, no replicas for testing
-            'number_of_shards': 1,
-            'number_of_replicas': 0,
+            'settings': {
+                # just one shard, no replicas for testing
+                'number_of_shards': 1,
+                'number_of_replicas': 0,
 
-            # custom analyzer for analyzing file paths
-            'analysis': {
-              'analyzer': {
-                'file_path': {
-                  'type': 'custom',
-                  'tokenizer': 'path_hierarchy',
-                  'filter': ['lowercase']
+                # custom analyzer for analyzing file paths
+                'analysis': {
+                    'analyzer': {
+                        'file_path': {
+                            'type': 'custom',
+                            'tokenizer': 'path_hierarchy',
+                            'filter': ['lowercase']
+                        }
+                    }
                 }
-              }
             }
-          }
         },
         # ignore already existing index
         ignore=400
     )
 
     AssetId = {
-        'subname': {"type" : "multi_field",
-                    "fields" : {
-                        "subname" : {"type" : "string", "index" : "analyzed"},
-                        "subname_raw" : {"type" : "string", "index" : "not_analyzed", 'store': True}
+        'subname': {"type": "multi_field",
+                    "fields": {
+                        "subname": {"type": "string", "index": "analyzed"},
+                        "subname_raw": {"type": "string",
+                                        "index": "not_analyzed",
+                                        'store': True}
                     }},
-        'mimetype': {'type': 'string', 'index' : 'not_analyzed', 'store': True},
-        'file__hash': {'type': 'string', 'index' : 'not_analyzed', 'store': True},
-        'file__filename': {'type': 'string', 'analyzer': 'file_path'}
+        'mimetype': {'type': 'string',
+                     'index': 'not_analyzed',
+                     'store': True},
+        'file__hash': {'type': 'string',
+                       'index': 'not_analyzed',
+                       'store': True},
+        'file__filename': {'type': 'string',
+                           'analyzer': 'file_path'}
     }
-    
+
     client.indices.put_mapping(
         index=index,
         doc_type='FileDescription',
         body={
-          'FileDescription': {
-            "_id" : {
-                "path" : "file__hash"
-            },
-            'properties': {
-              'file__hash': {'type': 'string', 'index' : 'not_analyzed', 'store': True},
-              'file__filename': {'type': 'string', 'analyzer': 'file_path', 'store': True}
+            'FileDescription': {
+                "_id": {
+                    "path": "file__hash"
+                },
+                'properties': {
+                    'file__hash': {'type': 'string',
+                                   'index': 'not_analyzed',
+                                   'store': True},
+                    'file__filename': {'type': 'string',
+                                       'analyzer': 'file_path',
+                                       'store': True}
+                }
             }
-          }
         }
     )
-    
+
     client.indices.put_mapping(
         index=index,
         doc_type='AssetDescription',
         body={
-          'AssetDescription': {
-            '_parent': {
-              'type': 'FileDescription'
-            },
-            'properties': {
-              'asset__subname': {"type" : "multi_field",
-                "fields" : {
-                    "asset__subname" : {"type" : "string", "index" : "analyzed", 'store': True},
-                    "asset__subname_raw" : {"type" : "string", "index" : "not_analyzed", 'store': True}
-                    }},
-              'asset__mimetype': {'type': 'string', 'index' : 'not_analyzed', 'store': True},
-              'asset__file__filename': {'type': 'string', 'analyzer': 'file_path', 'store': True},
-              'asset__file__hash': {'type': 'string', 'index' : 'not_analyzed', 'store': True},
-              "metadata" : {
-                "type" : "nested", "store" : "yes", "index" : "analyzed", "omit_norms" : "true", "include_in_parent":True,
-                "properties" : {
-                        "key" : {"type" : "string"},
-                        "value" : {"type" : "string"}, #TODO: make multi_field
-                        "type" : {"type" : "string"}
-                    }
+            'AssetDescription': {
+                '_parent': {
+                    'type': 'FileDescription'
                 },
-                "dependencies" : {
-                    "type" : "nested", "store" : "yes", "index" : "analyzed", "omit_norms" : "true", "include_in_parent":True,
-                    'properties': AssetId,
-                },
+                'properties': {
+                    'asset__subname': {"type": "multi_field",
+                                       "fields": {
+                                           "asset__subname": {"type": "string",
+                                                              "index": "analyzed",
+                                                              'store': True},
+                                           "asset__subname_raw": {"type": "string",
+                                                                  "index": "not_analyzed",
+                                                                  'store': True}
+                                       }},
+                    'asset__mimetype': {'type': 'string',
+                                        'index': 'not_analyzed',
+                                        'store': True},
+                    'asset__file__filename': {'type': 'string',
+                                              'analyzer': 'file_path',
+                                              'store': True},
+                    'asset__file__hash': {'type': 'string',
+                                          'index': 'not_analyzed',
+                                          'store': True},
+                    "metadata": {
+                        "type": "nested",
+                        "store": "yes",
+                        "index": "analyzed",
+                        "omit_norms": "true",
+                        "include_in_parent": True,
+                        "properties": {
+                            "key": {"type": "string"},
+                            "value": {"type": "string"},  # TODO: make multi_field
+                            "type": {"type": "string"}
+                        }
+                    },
+                    "dependencies": {
+                        "type": "nested",
+                        "store": "yes",
+                        "index": "analyzed",
+                        "omit_norms": "true",
+                        "include_in_parent": True,
+                        'properties': AssetId,
+                    },
+                }
             }
-          }
         }
     )
 
@@ -121,16 +149,15 @@ def parse_file_descriptions(path):
     dump = open('/tmp/play.txt', 'wb')
     for filename in os.listdir(path):
         print('=' * 80)
-        print(filename) 
+        print(filename)
         file_descr = store.get_metadata(path, filename)
         print(json.dumps(file_descr, indent=4))
-        #print(file_descr)
-        for document in  indexer.serialize_to_documents(file_descr):
+        # print(file_descr)
+        for document in indexer.serialize_to_documents(file_descr):
             print(document)
             dump.write(yaml.dump(document))
             dump.write('\n---\n')
             yield document
-
 
 
 def parse_store(client, path='/tmp/damn', index='damn'):
@@ -145,8 +172,8 @@ def parse_store(client, path='/tmp/damn', index='damn'):
             client,
             parse_file_descriptions(path),
             index=index,
-            chunk_size=50 # keep the batch sizes small for appearances only
-        ):
+            chunk_size=50  # keep the batch sizes small for appearances only
+    ):
         action, result = result.popitem()
         doc_id = '/%s/%s/%s' % (index, result['_type'], result['_id'])
         # process the information from ES whether the document has been
@@ -174,4 +201,3 @@ if __name__ == '__main__':
 
     # and now we can count the documents
     print(es.count(index='damn')['count'], 'documents in index')
-
