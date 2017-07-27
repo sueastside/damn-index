@@ -14,4 +14,4 @@ RUN systemctl enable elasticsearch.service
 # download and setup peragro-index
 ARG CACHEBUST=1
 ADD . /opt/peragro-index
-RUN /opt/peragro-index && python3 setup.py develop
+RUN cd /opt/peragro-index && python3 setup.py develop
