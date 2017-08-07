@@ -7,8 +7,9 @@ from dateutil.parser import parse as parse_date
 
 from elasticsearch import Elasticsearch
 
+
 def print_hits(results, facet_masks={}):
-    " Simple utility function to print results of a search query. "
+    """ Simple utility function to print results of a search query. """
     print('=' * 80)
     print('Total %d found in %dms' % (results['hits']['total'], results['took']))
     if results['hits']['hits']:
@@ -19,7 +20,7 @@ def print_hits(results, facet_masks={}):
     for facet, mask in list(facet_masks.items()):
         print('-' * 80)
         for d in results['facets'][facet]['terms']:
-            #print(mask % d)
+            # print(mask % d)
             print(d)
     print('=' * 80)
     print()
@@ -38,14 +39,14 @@ result = es.search(
     index='damn',
     doc_type='AssetDescription',
     body={
-        "query" : {
-            "match_all" : {  }
+        "query": {
+            "match_all": {}
         },
-        "facets" : {
-            "mimetype" : {
-                "terms" : {
-                    "field" : "asset__mimetype",
-                    "size" : 10
+        "facets": {
+            "mimetype": {
+                "terms": {
+                    "field": "asset__mimetype",
+                    "size": 10
                 }
             }
         }
@@ -58,14 +59,14 @@ result = es.search(
     index='damn',
     doc_type='AssetDescription',
     body={
-        "query" : {
-            "match_all" : {  }
+        "query": {
+            "match_all": {}
         },
-        "facets" : {
-            "metadata" : {
-                "terms" : {
-                    "field" : "metadata.key",
-                    "size" : 10
+        "facets": {
+            "metadata": {
+                "terms": {
+                    "field": "metadata.key",
+                    "size": 10
                 }
             }
         }
@@ -73,28 +74,24 @@ result = es.search(
 )
 print_hits(result, {'metadata': ''})
 
-
-
-
-
 result = es.search(
     index='damn',
     doc_type='AssetDescription',
     body={
         'query': {
-        'filtered': {
-          'filter': {
-            'has_parent': {
-                'type': 'FileDescription',
-                "query" : {
-                "filtered": {
-                  "query": { "match_all": {}},
-                  "filter" : {"term": {  "file__hash": "90ca0b2230d6f9b486cd932e1ae1c28b780a2b0c"}}            
-                  }
+            'filtered': {
+                'filter': {
+                    'has_parent': {
+                        'type': 'FileDescription',
+                        "query": {
+                            "filtered": {
+                                "query": {"match_all": {}},
+                                "filter": {"term": {"file__hash": "90ca0b2230d6f9b486cd932e1ae1c28b780a2b0c"}}
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
         }
     }
 )
@@ -119,9 +116,9 @@ result = es.search(
     index='damn',
     doc_type='FileDescription',
     body={
-            "query" : {
-                "match" : {"file__filename" : "/home/sueastside"}
-            }
-          }
+        "query": {
+            "match": {"file__filename": "/home/sueastside"}
+        }
+    }
 )
 print_hits(result)
