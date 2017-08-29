@@ -4,16 +4,22 @@ import sys
 import argparse
 import json
 import copy
-
+from elasticsearch import Elasticsearch
 from damn_at.utilities import unique_asset_id_reference_from_fields
 
 
 '''
 pt a ../peragro-test-files/mesh/blender/cube1.blend -f json-pretty\
- | pt index transform \
- | curl -XPOST --data-binary @- http://localhost:9200/damn/asset/_bulk\
+ | pt index elastic\
  | pt index stats
 '''
+
+
+def index(asset):
+    es = Elasticsearch()
+    ret = es.index(index='damn', doc_type='asset',
+                   id=asset['id'], body=asset)
+    print(ret)
 
 
 def create_argparse(parser, subparsers):
@@ -26,15 +32,15 @@ def create_argparse(parser, subparsers):
         description='valid subcommands',
         help='additional help',
     )
-    create_argparse_transform(subparse, subsubparsers)
+    create_argparse_elastic(subparse, subsubparsers)
     create_argparse_generate_search(subparse, subsubparsers)
     create_argparse_stats(subparse, subsubparsers)
 
 
-def create_argparse_transform(parser, subparsers):
+def create_argparse_elastic(parser, subparsers):
     subparse = subparsers.add_parser(
-        "transform",  # aliases=("transform",),
-        help="Transform a given filedescription to a format usable for indexing",
+        "elastic",  # aliases=("transform",),
+        help="index the given file description to elasticsearch",
     )
     subparse.add_argument(
         'infile', nargs='?',
@@ -49,6 +55,7 @@ def create_argparse_transform(parser, subparsers):
         file_copy = copy.deepcopy(data)
         file_copy['metadata'] = file_copy.get('metadata', {})
         del file_copy['assets']
+        del file_copy['metadata']
         for asset in data['assets']:
             subname = asset['asset']['subname']
             mimetype = asset['asset']['mimetype']
@@ -58,8 +65,7 @@ def create_argparse_transform(parser, subparsers):
             a.update(asset)
             assets.append(a)
         for asset in assets:
-            print(json.dumps({'index': {'_id': asset['id']}}))
-            print(json.dumps(asset))
+            index(asset)
 
     subparse.set_defaults(
         func=lambda args:
